@@ -4,65 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebXR AR Passthrough</title>
-    <style>
-        body { margin: 0; }
-        canvas { display: block; }
-    </style>
+  
 </head>
+<script>
+console.log("DFs")
+const xr = navigator.xr;
+
+if (navigator.xr) {
+  navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
+    if (supported) {
+      button.style.display = 'block';
+      console.log("supported")
+    }
+   
+  });
+} else {
+  alert('WebXR not supported');
+  console.log("notsupported")
+}
+
+</script>
 <body>
-    <script src="https://threejs.org/build/three.js"></script>
-    <script src="https://threejs.org/examples/jsm/webxr/ARButton.js"></script>
-    <script>
-        let scene, camera, renderer;
-
-        // Initialize the Three.js scene
-        function init() {
-            // Create a scene
-            scene = new THREE.Scene();
-
-            // Create a camera with a perspective view
-            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
-
-            // Create the WebGLRenderer with XR support enabled
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.xr.enabled = true;  // Enable WebXR (VR and AR support)
-            document.body.appendChild(renderer.domElement);
-
-            // Add an AR Button for enabling AR mode (Passthrough)
-            document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] }));
-
-            // Add a basic cube for testing
-            const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-            const cube = new THREE.Mesh(geometry, material);
-            cube.position.set(0, 0, -0.5);  // Position the cube 0.5 meters in front of the user
-            scene.add(cube);
-
-            // Handle window resize
-            window.addEventListener('resize', onWindowResize, false);
-        }
-
-        // Function to handle resizing
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        // Animation loop for rendering the scene
-        function animate() {
-            renderer.setAnimationLoop(render);
-        }
-
-        // Render the scene
-        function render() {
-            renderer.render(scene, camera);
-        }
-
-        // Initialize and animate the scene
-        init();
-        animate();
-    </script>
+   <div id="sup">hello</div>
+   <div id="notsup">hello</div>
 </body>
 </html>
