@@ -59,7 +59,7 @@
                             requiredFeatures: ['dom-overlay', 'local-floor', 'hand-tracking'], // Add passthrough support
                         }).then(onSessionStarted).catch(err => {
                             console.error("Failed to start AR session", err);
-                            supDiv.innerHTML("Failed ot immerse")
+                            supDiv.innerHTML="Failed ot immerse";
                         });
         }
         notSupDiv.style.display = 'block';
