@@ -10,6 +10,10 @@
 console.log("DFs")
 const xr = navigator.xr;
 
+const supDiv = document.getElementById('sup');
+    const notSupDiv = document.getElementById('notsup');
+
+
 if (navigator.xr) {
   navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
     if (supported) {
