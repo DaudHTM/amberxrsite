@@ -51,16 +51,18 @@
       notSupDiv.style.display = 'block'; 
     }
 
-    function immersive(){
+    async function immersive(){
         if(supportedAr){
             notSupDiv.style.display = 'hidden';
             supDiv.style.display = 'block';
-            navigator.xr.requestSession('immersive-ar', {
-                            requiredFeatures: ['dom-overlay', 'local-floor', 'hand-tracking'], // Add passthrough support
-                        }).then(onSessionStarted).catch(err => {
-                            console.error("Failed to start AR session", err);
-                            supDiv.innerHTML="Failed ot immerse";
-                        });
+            try {
+        const session = await navigator.xr.requestSession('immersive-ar', {
+            requiredFeatures: ['hit-test']
+        });
+        // Use the session (e.g., rendering loop)
+    } catch (error) {
+        console.error("Failed to start AR session:", error);
+    }
         }
         notSupDiv.style.display = 'block';
         supDiv.style.display = 'hidden';
