@@ -38,10 +38,10 @@
     if (navigator.xr) {
       navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
         if (supported) {
-          notSupDiv.style.display = 'block';
+   
           console.log("supported")
           supportedAr=true;
-          supDiv.style.display = 'block';
+         
         }
         
       });
@@ -53,10 +53,13 @@
 
     function immersive(){
         if(supportedAr){
+            notSupDiv.style.display = 'hidden';
+            supDiv.style.display = 'block';
             navigator.xr.requestSession('immersive-ar', {
                             requiredFeatures: ['dom-overlay', 'local-floor', 'hand-tracking'], // Add passthrough support
                         }).then(onSessionStarted).catch(err => {
                             console.error("Failed to start AR session", err);
+                            supDiv.innerHTML("Failed ot immerse")
                         });
         }
         notSupDiv.style.display = 'block';
