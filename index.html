@@ -19,6 +19,7 @@
 <body>
     <div id="sup">WebXR is supported!</div>
    <div id="notsup">WebXR is not supported.</div>
+   <button onclick="immersive()" id="startbut">Start passthrough</button>
 
 
 
@@ -30,20 +31,36 @@
     const supDiv = document.getElementById('sup');
         const notSupDiv = document.getElementById('notsup');
     
+    const startButton = document.getElementById('startbut');
+
+    supportedAr = false;
     
     if (navigator.xr) {
       navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
         if (supported) {
           notSupDiv.style.display = 'block';
           console.log("supported")
+          supportedAr=true;
           supDiv.style.display = 'block';
         }
-        notSupDiv.style.display = 'block'; 
+        
       });
     } else {
       alert('WebXR not supported');
       console.log("notsupported")
       notSupDiv.style.display = 'block'; 
+    }
+
+    function immersive(){
+        if(supportedAr){
+            navigator.xr.requestSession('immersive-ar', {
+                            requiredFeatures: ['dom-overlay', 'local-floor', 'hand-tracking'], // Add passthrough support
+                        }).then(onSessionStarted).catch(err => {
+                            console.error("Failed to start AR session", err);
+                        });
+        }
+        notSupDiv.style.display = 'block';
+        supDiv.style.display = 'hidden';
     }
     
     </script>
