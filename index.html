@@ -1,45 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebXR AR Passthrough</title>
-</head>
-<style>
-    #sup {
-        display: none; /* Initially hidden */
-    }
-    #notsup {
-        display: none; /* Initially hidden */
-    }
-</style>
-<body>
-    <div id="sup">WebXR is supported!</div>
-    <div id="notsup">WebXR is not supported.</div>
-    <button onclick="immersive()" id="startbut">Start passthrough</button>
+<!doctype html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'>
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+    <link rel='icon' type='image/png' sizes='32x32' href='favicon-32x32.png'>
+    <link rel='icon' type='image/png' sizes='96x96' href='favicon-96x96.png'>
+    <title>Immersive AR Session</title>
+  </head>
+  <body>
+    <header>
+      <details open>
+        <summary>Immersive AR Session</summary>
+        <p>
+          This sample demonstrates how to start and end an 'immersive-ar' XR session.
+          <a class="back" href="./">Back</a>
+        </p>
+      </details>
+    </header>
+    <script type="module">
+      import {WebXRButton} from './webxr-button.js';
+      // XR globals.
+      let xrButton = null;
 
-    <script>
-        console.log("DFs");
-        const xr = navigator.xr;
-        const supDiv = document.getElementById('sup');
-        const notSupDiv = document.getElementById('notsup');
-        const startButton = document.getElementById('startbut');
+      function initXR() {
+        xrButton = new WebXRButton({
+          onRequestSession: onRequestSession,
+          onEndSession: onEndSession,
+          textEnterXRTitle: "START AR",
+          textXRNotFoundTitle: "AR NOT FOUND",
+          textExitXRTitle: "EXIT AR",
+        });
+        document.querySelector('header').appendChild(xrButton.domElement);
         
-        function immersive(){
-        
-            if (navigator.xr) {
-          // Checks to ensure that 'immersive-ar' mode is available, and only
-          // enables the button if so.
+        if (navigator.xr) {
           navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
-            supDiv.style.display="block;";
+            xrButton.enabled = supported;
           });
-
-          navigator.xr.requestSession('immersive-ar');
         }
-    }
-   
+      }
 
-   
+      function onRequestSession() {
+        // Requests an 'immersive-ar' session.
+        return navigator.xr.requestSession('immersive-ar')
+          .then((session) => {
+            xrButton.setSession(session);
+            onSessionStarted(session);
+          });
+      }
+
+      function onSessionStarted(session) {
+        session.addEventListener('end', onSessionEnded);
+        // Request animation frame (if needed, can be expanded later).
+        session.requestAnimationFrame(onXRFrame);
+      }
+
+      function onEndSession(session) {
+        session.end();
+      }
+
+      function onSessionEnded() {
+        xrButton.setSession(null);
+      }
+
+      function onXRFrame(t, frame) {
+        // Placeholder for XR frame processing (can be expanded later).
+        session.requestAnimationFrame(onXRFrame);
+      }
+
+      // Start the XR application.
+      initXR();
     </script>
-</body>
+  </body>
 </html>
