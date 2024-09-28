@@ -1,70 +1,92 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebXR AR Passthrough</title>
-</head>
-<style>
-    #sup {
-        display: none; /* Initially hidden */
-    }
-    #notsup {
-        display: none; /* Initially hidden */
-    }
-</style>
-<body>
-    <div id="sup">WebXR is supported!</div>
-    <div id="notsup">WebXR is not supported.</div>
-    <button onclick="immersive()" id="startbut">Start passthrough</button>
+<!doctype html>
+<!--
+Copyright 2018 The Immersive Web Community Group
 
-    <script>
-        console.log("DFs");
-        const xr = navigator.xr;
-        const supDiv = document.getElementById('sup');
-        const notSupDiv = document.getElementById('notsup');
-        const startButton = document.getElementById('startbut');
-        let supportedAr = false;
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
 
-        if (xr) {
-            xr.isSessionSupported('immersive-ar').then((supported) => {
-                if (supported) {
-                    console.log("supported");
-                    supportedAr = true;
-                    supDiv.style.display = 'block';
-                } else {
-                    notSupDiv.style.display = 'block';
-                }
-            }).catch((err) => {
-                console.error("Error checking XR support:", err);
-                notSupDiv.style.display = 'block';
-            });
-        } else {
-            alert('WebXR not supported');
-            console.log("notsupported");
-            notSupDiv.style.display = 'block';
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'>
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+    <link rel='icon' type='image/png' sizes='32x32' href='favicon-32x32.png'>
+    <link rel='icon' type='image/png' sizes='96x96' href='favicon-96x96.png'>
+    <link rel='stylesheet' href='css/common.css'>
+
+    <title>Immersive AR Session</title>
+  </head>
+  <body>
+    <header>
+      <details open>
+        <summary>Immersive AR Session</summary>
+        <p>
+          This sample demonstrates how to use an 'immersive-ar' XRSession to
+          present a passthrough AR experience. No additional content will be shown.
+          <a class="back" href="./">Back</a>
+        </p>
+      </details>
+    </header>
+    <script type="module">
+      // Import required modules
+      import {QueryArgs} from './js/util/query-args.js';
+
+      // If requested, use the polyfill to provide support for mobile devices
+      // and devices which only support WebVR.
+      import WebXRPolyfill from './js/third-party/webxr-polyfill/build/webxr-polyfill.module.js';
+      if (QueryArgs.getBool('usePolyfill', true)) {
+        let polyfill = new WebXRPolyfill();
+      }
+
+      // XR globals.
+      let xrImmersiveRefSpace = null;
+
+      function initXR() {
+        if (navigator.xr) {
+          // Request an 'immersive-ar' session
+          navigator.xr.requestSession('immersive-ar').then(onSessionStarted);
         }
+      }
 
-        async function immersive() {
-            if (supportedAr) {
-                notSupDiv.style.display = 'none';
-                supDiv.style.display = 'block';
-                try {
-                    const session = await xr.requestSession('immersive-ar', {
-                        requiredFeatures: ['hit-test']
-                    });
-                    // Use the session (e.g., rendering loop)
-                    console.log("Session started:", session);
-                } catch (err) {
-                    console.error("Failed to start session:", err);
-                    notSupDiv.style.display = 'block';
-                    supDiv.style.display = 'none';
-                }
-            } else {
-                notSupDiv.style.display = 'block';
-                supDiv.style.display = 'none';
-            }
-        }
+      function onSessionStarted(session) {
+        session.addEventListener('end', onSessionEnded);
+
+        // Request the reference space for the session
+        session.requestReferenceSpace('local').then((refSpace) => {
+          xrImmersiveRefSpace = refSpace;
+          session.requestAnimationFrame(onXRFrame);
+        });
+      }
+
+      function onSessionEnded(event) {
+        event.session.end();
+      }
+
+      // Called every time an XRSession requests that a new frame be drawn.
+      function onXRFrame(t, frame) {
+        let session = frame.session;
+
+        // Continue the animation frame request
+        session.requestAnimationFrame(onXRFrame);
+      }
+
+      // Start the XR application.
+      initXR();
     </script>
-</body>
+  </body>
 </html>
