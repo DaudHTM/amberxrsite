@@ -25,20 +25,29 @@
         const notSupDiv = document.getElementById('notsup');
         const startButton = document.getElementById('startbut');
         
-       async function onRequestSession() {
-        if (navigator.xr) {
-                try {
-                    const session = await navigator.xr.requestSession('immersive-ar');
-                    // Set up the session here
-                    console.log('AR session started:', session);
-                } catch (err) {
-                    console.error('Failed to start AR session:', err);
-                }
-            } else {
-                console.error('WebXR not supported');
-            }
+const immersiveOK = await navigator.xr.isSessionSupported("immersive-ar");
+if (immersiveOK) {
+  supDiv.style.display="block;";
+
+} else {
+    notSupDiv.style.display="block;";
+  // Create an inline session instead, or tell the user about the
+  // incompatibility if inline is required
+}
+
+
+
+        async function onRequestSession() {
+            const session = await navigator.xr.requestSession("immersive-ar");
 
         }
+
+        function rea(){
+            session.requestAnimationFrame(rea);
+        }
+
+        session.requestAnimationFrame(rea);
+
    
 
    
