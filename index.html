@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebXR AR Passthrough</title>
-  
 </head>
 <style>
     #sup {
@@ -14,60 +13,58 @@
         display: none; /* Initially hidden */
     }
 </style>
-
-
 <body>
     <div id="sup">WebXR is supported!</div>
-   <div id="notsup">WebXR is not supported.</div>
-   <button onclick="immersive()" id="startbut">Start passthrough</button>
+    <div id="notsup">WebXR is not supported.</div>
+    <button onclick="immersive()" id="startbut">Start passthrough</button>
 
-
-
-
-   <script>
-    console.log("DFs")
-    const xr = navigator.xr;
-    
-    const supDiv = document.getElementById('sup');
+    <script>
+        console.log("DFs");
+        const xr = navigator.xr;
+        const supDiv = document.getElementById('sup');
         const notSupDiv = document.getElementById('notsup');
-    
-    const startButton = document.getElementById('startbut');
+        const startButton = document.getElementById('startbut');
+        let supportedAr = false;
 
-    supportedAr = false;
-    
-    if (navigator.xr) {
-      navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
-        if (supported) {
-   
-          console.log("supported")
-          supportedAr=true;
-         
+        if (xr) {
+            xr.isSessionSupported('immersive-ar').then((supported) => {
+                if (supported) {
+                    console.log("supported");
+                    supportedAr = true;
+                    supDiv.style.display = 'block';
+                } else {
+                    notSupDiv.style.display = 'block';
+                }
+            }).catch((err) => {
+                console.error("Error checking XR support:", err);
+                notSupDiv.style.display = 'block';
+            });
+        } else {
+            alert('WebXR not supported');
+            console.log("notsupported");
+            notSupDiv.style.display = 'block';
         }
-        
-      });
-    } else {
-      alert('WebXR not supported');
-      console.log("notsupported")
-      notSupDiv.style.display = 'block'; 
-    }
 
-    async function immersive(){
-        if(supportedAr){
-            notSupDiv.style.display = 'hidden';
-            supDiv.style.display = 'block';
-           
-       navigator.xr.requestSession('immersive-ar', {
-            requiredFeatures: ['hit-test']
-        });
-        // Use the session (e.g., rendering loop)
-   
+        async function immersive() {
+            if (supportedAr) {
+                notSupDiv.style.display = 'none';
+                supDiv.style.display = 'block';
+                try {
+                    const session = await xr.requestSession('immersive-ar', {
+                        requiredFeatures: ['hit-test']
+                    });
+                    // Use the session (e.g., rendering loop)
+                    console.log("Session started:", session);
+                } catch (err) {
+                    console.error("Failed to start session:", err);
+                    notSupDiv.style.display = 'block';
+                    supDiv.style.display = 'none';
+                }
+            } else {
+                notSupDiv.style.display = 'block';
+                supDiv.style.display = 'none';
+            }
         }
-        notSupDiv.style.display = 'block';
-        supDiv.style.display = 'hidden';
-    }
-
-    
-    
     </script>
 </body>
 </html>
