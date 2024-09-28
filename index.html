@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quest 2 Passthrough</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="xrCanvas"></canvas>
+  <script>
+    let xrSession;
+    let xrRefSpace;
+
+    async function initXR() {
+      if (navigator.xr) {
+        try {
+          xrSession = await navigator.xr.requestSession('immersive-ar', {
+            requiredFeatures: ['local'],
+            optionalFeatures: ['camera-access'] // Enable passthrough
+          });
+          
+          let canvas = document.getElementById('xrCanvas');
+          let gl = canvas.getContext('webgl', { xrCompatible: true });
+          
+          xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(xrSession, gl) });
+          
+          xrRefSpace = await xrSession.requestReferenceSpace('local');
+
+          xrSession.requestAnimationFrame(onXRFrame);
+        } catch (err) {
+          console.error('Failed to initialize WebXR', err);
+        }
+      } else {
+        alert("WebXR not supported on this browser.");
+      }
+    }
+
+    function onXRFrame(time, frame) {
+      let session = frame.session;
+      session.requestAnimationFrame(onXRFrame);
+      
+      const pose = frame.getViewerPose(xrRefSpace);
+      if (pose) {
+        let glLayer = session.renderState.baseLayer;
+        gl.bindFramebuffer(gl.FRAMEBUFFER, glLayer.framebuffer);
+
+        // Render the scene with passthrough view
+      }
+    }
+
+    initXR();
+
+    function captureFrame() {
+    let canvas = document.getElementById('xrCanvas');
+    let frameDataURL = canvas.toDataURL('image/png');
+  
+    // Send this data URL to an API
+    fetch('YOUR_API_ENDPOINT', {
+      method: 'POST',
+      body: JSON.stringify({ image: frameDataURL }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error('Error:', error));
+  }
+  
+  // Capture frame every 2 seconds (for example)
+  setInterval(captureFrame, 4000);
+  
+  </script>
+</body>
+</html>
