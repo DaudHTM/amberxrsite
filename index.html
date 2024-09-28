@@ -55,14 +55,12 @@
         if(supportedAr){
             notSupDiv.style.display = 'hidden';
             supDiv.style.display = 'block';
-            try {
-        const session = await navigator.xr.requestSession('immersive-ar', {
+           
+       navigator.xr.requestSession('immersive-ar', {
             requiredFeatures: ['hit-test']
         });
         // Use the session (e.g., rendering loop)
-    } catch (error) {
-        console.error("Failed to start AR session:", error);
-    }
+   
         }
         notSupDiv.style.display = 'block';
         supDiv.style.display = 'hidden';
