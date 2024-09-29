@@ -109,12 +109,9 @@ function captureFrame() {
       method: 'POST',
       body: formData,
     })
-    .then(response => response.blob()) // Expect the response to be a blob (MP3 file)
-    .then(blob => {
-      // Create a URL for the blob and play the audio
-      const audioUrl = URL.createObjectURL(blob);
-      const audio = new Audio(audioUrl);
-      audio.play();
+    .then(response => response.json())
+    .then(data => {
+      console.log('Success:', data);
     })
     .catch((error) => {
       console.error('Error:', error);
