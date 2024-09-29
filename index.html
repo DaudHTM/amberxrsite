@@ -114,7 +114,9 @@ async function activateXR() {
   setInterval(captureFrame, 3000);
 }
 
-function captureFrame() {
+async function captureFrame() {
+
+    updateTextMesh("jkdjfkdf");
   const canvas = document.querySelector('canvas');
   
   canvas.toBlob(function(blob) {
