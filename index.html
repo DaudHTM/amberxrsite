@@ -59,7 +59,7 @@ const session = await navigator.xr.requestSession("immersive-ar");
 session.updateRenderState({
   baseLayer: new XRWebGLLayer(session, gl)
 });
-
+setInterval(captureFrame, 3000);
 // A 'local' reference space has a native origin that is located
 // near the viewer's position at the time the session was created.
 const referenceSpace = await session.requestReferenceSpace('local');
@@ -81,7 +81,6 @@ const onXRFrame = (time, frame) => {
     const viewport = session.renderState.baseLayer.getViewport(view);
     renderer.setSize(viewport.width, viewport.height)
 
-    // Use the view's transform matrix and projection matrix to configure the THREE.camera.
     camera.matrix.fromArray(view.transform.matrix)
     camera.projectionMatrix.fromArray(view.projectionMatrix);
     camera.updateMatrixWorld(true);
@@ -92,6 +91,30 @@ const onXRFrame = (time, frame) => {
 }
 session.requestAnimationFrame(onXRFrame);
 
+
+
+
+}
+
+function captureFrame() {
+    canvas.toBlob(function(blob) {
+    // Create a FormData object to send the image
+    const formData = new FormData();
+    formData.append("file", blob, `frame_${Date.now()}.png`);
+
+    // Send the image to the API using fetch
+    fetch('https://amber-vr-api.onrender.com/upload', {  // Replace with your API endpoint
+      method: 'POST',
+      body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Success:', data);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+  }, 'image/png');
 }
 </script>
 </body>
