@@ -82,7 +82,7 @@ async function activateXR() {
   // A 'local' reference space has a native origin that is located
   // near the viewer's position at the time the session was created.
   const referenceSpace = await session.requestReferenceSpace('local');
-
+  updateTextMesh("DFD");
   // Create a render loop that allows us to draw on the AR view.
   const onXRFrame = (time, frame) => {
     // Queue up the next draw request.
@@ -109,7 +109,7 @@ async function activateXR() {
       renderer.render(scene, camera)
     }
   }
-  updateTextMesh("DFD");
+  
   session.requestAnimationFrame(onXRFrame);
 
   
