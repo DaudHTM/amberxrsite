@@ -109,11 +109,12 @@ async function activateXR() {
       renderer.render(scene, camera)
     }
   }
+  updateTextMesh("DFD");
   session.requestAnimationFrame(onXRFrame);
 
   
 }
-updateTextMesh("DFD");
+
 
 
 async function captureFrame() {
